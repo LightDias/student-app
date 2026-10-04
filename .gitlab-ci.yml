@@ -1,0 +1,27 @@
+image: python:3.12-slim
+
+stages:
+  - build
+  - test
+
+build_job:
+  stage: build
+  script:
+    - python -m venv venv
+    - source venv/bin/activate
+    - pip install -r requirements.txt
+    - python -m compileall app.py
+  artifacts:
+    paths:
+      - venv/
+    expire_in: 1 hour
+
+test_job:
+  stage: test
+  script:
+    - source venv/bin/activate
+    - pytest -v --junitxml=report.xml
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
